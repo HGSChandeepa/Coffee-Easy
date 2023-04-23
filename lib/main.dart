@@ -1,7 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:newappdemo/models/userdata.dart';
 import 'package:newappdemo/screens/wrapper.dart';
+import 'package:newappdemo/services/auth.dart';
+import 'package:provider/provider.dart';
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -9,18 +12,19 @@ Future main() async {
   runApp(const MyApp());
 }
 
-class MyApp extends StatefulWidget {
+class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
   @override
-  State<MyApp> createState() => _MyAppState();
-}
-
-class _MyAppState extends State<MyApp> {
-  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Wrapper(),
+    //here in the stream provider the value is the returning val
+    return StreamProvider<UserData?>.value(
+      initialData: UserData(uid: ""),
+      value: AuthService().user,
+      child: MaterialApp(
+        debugShowCheckedModeBanner: false,
+        home: Wrapper(),
+      ),
     );
   }
 }
