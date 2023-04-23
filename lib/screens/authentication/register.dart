@@ -1,15 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:newappdemo/screens/authentication/singn_in.dart';
 import 'package:newappdemo/services/auth.dart';
+import 'package:newappdemo/screens/authentication/authenticate.dart';
 
-class SignIn extends StatefulWidget {
+class Register extends StatefulWidget {
   final Function toggleScreens;
-  SignIn({required this.toggleScreens});
+  Register({required this.toggleScreens});
 
   @override
-  State<SignIn> createState() => _SignInState();
+  State<Register> createState() => _SignInState();
 }
 
-class _SignInState extends State<SignIn> {
+class _SignInState extends State<Register> {
   //functions
 
   //here we are geting that insance and interacting with the authentication
@@ -25,14 +27,14 @@ class _SignInState extends State<SignIn> {
       appBar: AppBar(
         backgroundColor: Colors.green[400],
         elevation: 0,
-        title: const Text("Sign In Please"),
+        title: const Text("Register Please"),
         actions: [
           FilledButton.icon(
             onPressed: () {
               widget.toggleScreens();
             },
-            icon: const Icon(Icons.app_registration),
-            label: const Text("Register"),
+            icon: const Icon(Icons.login),
+            label: const Text("Sign in"),
             style: ButtonStyle(
               backgroundColor: MaterialStatePropertyAll(
                 Colors.green[400],
@@ -49,24 +51,6 @@ class _SignInState extends State<SignIn> {
         child: SingleChildScrollView(
           child: Column(
             children: [
-              ElevatedButton(
-                onPressed: () async {
-                  //we have to waite here
-                  //here this result can be Null if no user and a valid user if correclty done
-                  dynamic result = await _auth.signInAnon();
-                  if (result == Null) {
-                    print('error sign in');
-                  } else {
-                    print("signed in");
-                    print(result.uid);
-                  }
-                },
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.purple),
-                ),
-                child: const Text("Press to Sign in as anonymus"),
-              ),
-
               //singn in form email and password
               Form(
                   child: Column(
@@ -102,7 +86,7 @@ class _SignInState extends State<SignIn> {
                     style: const ButtonStyle(
                       backgroundColor: MaterialStatePropertyAll(Colors.green),
                     ),
-                    child: const Text("Sign in"),
+                    child: const Text("Register"),
                   ),
                 ],
               ))
