@@ -15,9 +15,12 @@ class _SignInState extends State<SignIn> {
   //here we are geting that insance and interacting with the authentication
 
   final AuthService _auth = AuthService();
+  //form key is used to check the form is valid or not
+  final _formKey = GlobalKey<FormState>();
   //text feilds
   String email = "";
   String password = "";
+  String error = "";
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,43 +72,64 @@ class _SignInState extends State<SignIn> {
 
               //singn in form email and password
               Form(
+                  key: _formKey,
                   child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  //email form
-                  TextFormField(
-                    onChanged: (val) {
-                      setState(() {
-                        email = val;
-                      });
-                    },
-                  ),
+                    children: [
+                      const SizedBox(height: 20),
+                      //email form
+                      TextFormField(
+                        validator: (val) =>
+                            val?.isEmpty == true ? "Enter a valid email" : null,
+                        onChanged: (val) {
+                          setState(() {
+                            email = val;
+                          });
+                        },
+                      ),
 
-                  const SizedBox(height: 20),
-                  //PASSWORD
-                  TextFormField(
-                    onChanged: (val) {
-                      setState(() {
-                        password = val;
-                      });
-                    },
-                    obscureText: true,
-                  ),
-                  const SizedBox(height: 20),
+                      const SizedBox(height: 20),
+                      //PASSWORD
+                      TextFormField(
+                        validator: (val) =>
+                            val!.length < 6 ? "Enter a valid password" : null,
+                        onChanged: (val) {
+                          setState(() {
+                            password = val;
+                          });
+                        },
+                        obscureText: true,
+                      ),
+                      const SizedBox(height: 20),
 
-                  ElevatedButton(
-                    //sign in methode
-                    onPressed: () async {
-                      print(email);
-                      print(password);
-                    },
-                    style: const ButtonStyle(
-                      backgroundColor: MaterialStatePropertyAll(Colors.green),
-                    ),
-                    child: const Text("Sign in"),
-                  ),
-                ],
-              ))
+                      ElevatedButton(
+                        //sign in methode
+                        onPressed: () async {
+                          if (_formKey.currentState!.validate()) {
+                            //if the user do not provides a valid email
+                            dynamic result = await _auth
+                                .signInWithEmailAndPassword(email, password);
+                            if (result == null) {
+                              setState(() {
+                                error =
+                                    "Could not signin with those credentials";
+                              });
+                            }
+                          }
+                        },
+                        style: const ButtonStyle(
+                          backgroundColor:
+                              MaterialStatePropertyAll(Colors.green),
+                        ),
+                        child: const Text("Sign in"),
+                      ),
+                      const SizedBox(height: 20),
+                      //erroe text
+                      Text(
+                        error,
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    ],
+                  ))
             ],
           ),
         ),
