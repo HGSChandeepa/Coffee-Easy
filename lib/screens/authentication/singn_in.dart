@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:newappdemo/services/auth.dart';
+import 'package:newappdemo/shared/loading.dart';
+
+import '../../shared/constants.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggleScreens;
@@ -21,122 +24,141 @@ class _SignInState extends State<SignIn> {
   String email = "";
   String password = "";
   String error = "";
+
+  //create a boolean for indiccate the circulaer indicator
+  bool isLoading = false;
+
+  //
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.green[100],
-      appBar: AppBar(
-        backgroundColor: Colors.green[400],
-        elevation: 0,
-        title: const Text("Sign In Please"),
-        actions: [
-          FilledButton.icon(
-            onPressed: () {
-              widget.toggleScreens();
-            },
-            icon: const Icon(Icons.app_registration),
-            label: const Text("Register"),
-            style: ButtonStyle(
-              backgroundColor: MaterialStatePropertyAll(
-                Colors.green[400],
+    return isLoading
+        ? const Loading()
+        : Scaffold(
+            backgroundColor: Colors.green[100],
+            appBar: AppBar(
+              backgroundColor: Colors.green[400],
+              elevation: 0,
+              title: const Text("Sign In Please"),
+              actions: [
+                FilledButton.icon(
+                  onPressed: () {
+                    widget.toggleScreens();
+                  },
+                  icon: const Icon(Icons.app_registration),
+                  label: const Text("Register"),
+                  style: ButtonStyle(
+                    backgroundColor: MaterialStatePropertyAll(
+                      Colors.green[400],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            body: Container(
+              padding: const EdgeInsets.symmetric(
+                vertical: 20,
+                horizontal: 50,
+              ),
+              child: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () async {
+                        //we have to waite here
+                        //here this result can be Null if no user and a valid user if correclty done
+                        dynamic result = await _auth.signInAnon();
+                        if (result == Null) {
+                          // ignore: avoid_print
+                          print('error sign in');
+                        } else {
+                          // ignore: avoid_print
+                          print("signed in");
+                          // ignore: avoid_print
+                          print(result.uid);
+                        }
+                      },
+                      style: const ButtonStyle(
+                        backgroundColor:
+                            MaterialStatePropertyAll(Colors.purple),
+                      ),
+                      child: const Text("Press to Sign in as anonymus"),
+                    ),
+
+                    //singn in form email and password
+                    Form(
+                        key: _formKey,
+                        child: Column(
+                          children: [
+                            const SizedBox(height: 20),
+                            //email form
+                            TextFormField(
+                              decoration: textInputDecoration.copyWith(
+                                  hintText: "email"),
+                              validator: (val) => val?.isEmpty == true
+                                  ? "Enter a valid email"
+                                  : null,
+                              onChanged: (val) {
+                                setState(() {
+                                  email = val;
+                                });
+                              },
+                            ),
+
+                            const SizedBox(height: 20),
+                            //PASSWORD
+                            TextFormField(
+                              decoration: textInputDecoration.copyWith(
+                                  hintText: "password"),
+                              validator: (val) => val!.length < 6
+                                  ? "Enter a valid password"
+                                  : null,
+                              onChanged: (val) {
+                                setState(() {
+                                  password = val;
+                                });
+                              },
+                              obscureText: true,
+                            ),
+                            const SizedBox(height: 20),
+
+                            ElevatedButton(
+                              //sign in methode
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  setState(() {
+                                    isLoading = true;
+                                  });
+                                  //if the user do not provides a valid email
+                                  dynamic result =
+                                      await _auth.signInWithEmailAndPassword(
+                                          email, password);
+                                  if (result == null) {
+                                    setState(() {
+                                      isLoading = false;
+                                      error =
+                                          "Could not signin with those credentials";
+                                    });
+                                  }
+                                }
+                              },
+                              style: const ButtonStyle(
+                                backgroundColor:
+                                    MaterialStatePropertyAll(Colors.green),
+                              ),
+                              child: const Text("Sign in"),
+                            ),
+                            const SizedBox(height: 20),
+                            //erroe text
+                            Text(
+                              error,
+                              style: const TextStyle(color: Colors.red),
+                            ),
+                          ],
+                        ))
+                  ],
+                ),
               ),
             ),
-          ),
-        ],
-      ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(
-          vertical: 20,
-          horizontal: 50,
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              ElevatedButton(
-                onPressed: () async {
-                  //we have to waite here
-                  //here this result can be Null if no user and a valid user if correclty done
-                  dynamic result = await _auth.signInAnon();
-                  if (result == Null) {
-                    // ignore: avoid_print
-                    print('error sign in');
-                  } else {
-                    // ignore: avoid_print
-                    print("signed in");
-                    // ignore: avoid_print
-                    print(result.uid);
-                  }
-                },
-                style: const ButtonStyle(
-                  backgroundColor: MaterialStatePropertyAll(Colors.purple),
-                ),
-                child: const Text("Press to Sign in as anonymus"),
-              ),
-
-              //singn in form email and password
-              Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      const SizedBox(height: 20),
-                      //email form
-                      TextFormField(
-                        validator: (val) =>
-                            val?.isEmpty == true ? "Enter a valid email" : null,
-                        onChanged: (val) {
-                          setState(() {
-                            email = val;
-                          });
-                        },
-                      ),
-
-                      const SizedBox(height: 20),
-                      //PASSWORD
-                      TextFormField(
-                        validator: (val) =>
-                            val!.length < 6 ? "Enter a valid password" : null,
-                        onChanged: (val) {
-                          setState(() {
-                            password = val;
-                          });
-                        },
-                        obscureText: true,
-                      ),
-                      const SizedBox(height: 20),
-
-                      ElevatedButton(
-                        //sign in methode
-                        onPressed: () async {
-                          if (_formKey.currentState!.validate()) {
-                            //if the user do not provides a valid email
-                            dynamic result = await _auth
-                                .signInWithEmailAndPassword(email, password);
-                            if (result == null) {
-                              setState(() {
-                                error =
-                                    "Could not signin with those credentials";
-                              });
-                            }
-                          }
-                        },
-                        style: const ButtonStyle(
-                          backgroundColor:
-                              MaterialStatePropertyAll(Colors.green),
-                        ),
-                        child: const Text("Sign in"),
-                      ),
-                      const SizedBox(height: 20),
-                      //erroe text
-                      Text(
-                        error,
-                        style: const TextStyle(color: Colors.red),
-                      ),
-                    ],
-                  ))
-            ],
-          ),
-        ),
-      ),
-    );
+          );
   }
 }
