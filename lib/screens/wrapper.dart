@@ -12,10 +12,11 @@ class Wrapper extends StatelessWidget {
   Widget build(BuildContext context) {
     //the user data that the provider proides this can be a user data or can be null.
     final user = Provider.of<UserData?>(context);
+    // ignore: avoid_print
     print(user);
     //return either home or auth
     if (user == null) {
-      return Authenticate();
+      return const Authenticate();
     } else {
       return Home();
     }

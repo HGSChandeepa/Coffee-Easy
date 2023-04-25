@@ -3,7 +3,7 @@ import 'package:newappdemo/services/auth.dart';
 
 class SignIn extends StatefulWidget {
   final Function toggleScreens;
-  SignIn({required this.toggleScreens});
+  const SignIn({super.key, required this.toggleScreens});
 
   @override
   State<SignIn> createState() => _SignInState();
@@ -58,9 +58,12 @@ class _SignInState extends State<SignIn> {
                   //here this result can be Null if no user and a valid user if correclty done
                   dynamic result = await _auth.signInAnon();
                   if (result == Null) {
+                    // ignore: avoid_print
                     print('error sign in');
                   } else {
+                    // ignore: avoid_print
                     print("signed in");
+                    // ignore: avoid_print
                     print(result.uid);
                   }
                 },

@@ -3,6 +3,8 @@ import 'package:newappdemo/screens/authentication/register.dart';
 import 'package:newappdemo/screens/authentication/singn_in.dart';
 
 class Authenticate extends StatefulWidget {
+  const Authenticate({super.key});
+
   @override
   State<Authenticate> createState() => _AuthenticateState();
 }

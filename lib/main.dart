@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:newappdemo/models/userdata.dart';
@@ -21,7 +20,7 @@ class MyApp extends StatelessWidget {
     return StreamProvider<UserData?>.value(
       initialData: UserData(uid: ""),
       value: AuthService().user,
-      child: MaterialApp(
+      child: const MaterialApp(
         debugShowCheckedModeBanner: false,
         home: Wrapper(),
       ),
